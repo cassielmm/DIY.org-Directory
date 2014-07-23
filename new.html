@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="stylesheet" type="text/css" href="styles.css" />
+
+	<script type="text/javascript" charset="utf-8" src="diy.dist.js"> </script>
+	<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+	<script type="text/javascript">
+		var diy = diyClient();
+
+		var url = '';
+
+		function changeURL() {
+	    	url = ($('#url-text').val());
+	    	
+			diy('/makers/' + url, function (err, body) {
+				if(err) return alert('Error fetching maker data.');
+				
+				var maker = body.response;
+
+				$('#avatar').attr('src',maker.avatar.medium.url);
+				
+				$('#nickname').html(maker.nickname);
+			});
+
+			diy('/makers/' + url + '/patches?limit=-1', function (err, body) {
+			    if (err) return alert('Couldn\'t fetch skills for maker: ' + url);
+			    
+			    var items = '';
+
+				body.response.forEach(function (patch) {
+			        items += '<td>' + '<img src="' + 'http:' + patch.skill.images.small + '">' + '</td>';
+			    })
+
+				$('#skills').html(items);
+			 });
+	    };
+	</script>
+</head>
+
+<body>
+	<h1 id="nickname">Maker Directory</h1>
+	<img id="avatar" src="http://www.geeksgig.com/wp-content/uploads/2014/06/BigDIY.png" height=150/>
+	<table align="center">
+		<tr id="skills"></tr>
+	</table>
+	<form>
+	    <label for="text">Name:</label>
+	    <input type="text" name="url-text" id="url-text" value="">
+	    <input type="button" id="submit" value="Submit" onclick="changeURL()">
+	</form>
+</body>
+
+</html>
